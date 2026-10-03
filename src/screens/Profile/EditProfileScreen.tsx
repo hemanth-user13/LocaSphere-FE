@@ -2,16 +2,18 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from "react-native";
 
 import { AppText, Avatar, Button, ErrorState, LoadingState, Screen, ScreenHeader, TextField, useToast } from "@/components";
 import { useAuth } from "@/context/AuthContext";
 import { useResource } from "@/hooks/useResource";
 import { usersService, type ProfileUpdate } from "@/services";
-import { colors, layout, spacing } from "@/theme";
+import { layout, makeStyles, spacing, useTheme } from "@/theme";
 import type { User } from "@/types/models";
 
 function EditForm({ user }: { user: User }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const toast = useToast();
   const { updateUser } = useAuth();
   const [form, setForm] = useState<Required<ProfileUpdate>>({
@@ -75,6 +77,7 @@ function EditForm({ user }: { user: User }) {
 }
 
 export default function EditProfileScreen() {
+  const { colors } = useTheme();
   const { data, error, isLoading, reload } = useResource(() => usersService.getMe());
   return (
     <Screen edges={Platform.OS === "ios" ? [] : ["top"]} background={colors.surface}>
@@ -90,7 +93,7 @@ export default function EditProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   scroll: { padding: layout.screenPadding, gap: spacing.xl, paddingBottom: spacing.xxl },
   avatar: { alignItems: "center", gap: spacing.sm, alignSelf: "center" },
@@ -103,9 +106,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: colors.primary,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
   },
   footer: { padding: layout.screenPadding, borderTopWidth: 1, borderTopColor: colors.borderSubtle },
-});
+}));

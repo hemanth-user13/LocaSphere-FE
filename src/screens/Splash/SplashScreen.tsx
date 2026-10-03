@@ -1,10 +1,10 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import Animated, { FadeIn, FadeInDown, FadeOut, ZoomIn } from "react-native-reanimated";
 
 import { AppText, Logo } from "@/components";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useTheme } from "@/theme";
 
 const SPLASH_DURATION_MS = 1600;
 
@@ -15,6 +15,8 @@ const SPLASH_DURATION_MS = 1600;
  * the hand-off is seamless.
  */
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   useEffect(() => {
     const t = setTimeout(onFinish, SPLASH_DURATION_MS);
     return () => clearTimeout(t);
@@ -47,7 +49,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   root: {
     position: "absolute",
     top: 0,
@@ -68,4 +70,4 @@ const styles = StyleSheet.create({
   },
   text: { alignItems: "center", gap: spacing.xs, marginTop: spacing.xl },
   footer: { position: "absolute", bottom: 48 },
-});
+}));

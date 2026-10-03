@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CreateTabButton, TabButton } from "@/components/navigation/TabButtons";
 import { useAuth } from "@/context/AuthContext";
-import { colors } from "@/theme";
+import { useTheme } from "@/theme";
 import type { IconName } from "@/types/models";
 
 type TabIconProps = { name: IconName; active: IconName; color: ColorValue; focused: boolean };
@@ -21,6 +21,7 @@ const icon = (name: IconName, active: IconName) =>
 
 /** Main tab navigator: Home · Explore · Create · Saved · Profile. */
 export default function TabLayout() {
+  const { colors } = useTheme();
   const { isSignedIn, hasOnboarded } = useAuth();
   const insets = useSafeAreaInsets();
 

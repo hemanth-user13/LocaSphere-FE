@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useTheme } from "@/theme";
 import { formatCount, formatRating } from "@/utils/format";
 
 import { AppText } from "./AppText";
@@ -15,6 +15,8 @@ type Props = {
 };
 
 export function Rating({ value, count, size = "sm", inverse }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const isNew = value <= 0;
   return (
     <View
@@ -39,6 +41,8 @@ export function Rating({ value, count, size = "sm", inverse }: Props) {
 
 /** Row of five stars for review inputs / summaries. */
 export function Stars({ value, size = 14 }: { value: number; size?: number }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.row}>
       {[1, 2, 3, 4, 5].map((i) => (
@@ -53,6 +57,6 @@ export function Stars({ value, size = 14 }: { value: number; size?: number }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: { flexDirection: "row", alignItems: "center", gap: spacing.xxs + 1 },
-});
+}));

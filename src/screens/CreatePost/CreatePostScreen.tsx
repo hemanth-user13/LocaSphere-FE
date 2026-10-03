@@ -1,11 +1,11 @@
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import Animated, { FadeIn, useAnimatedStyle, withTiming } from "react-native-reanimated";
 
 import { AppText, Button, Screen, useToast } from "@/components";
 import { contentService } from "@/services";
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { DraftPost } from "@/types/models";
 import { haptics } from "@/utils/haptics";
 
@@ -34,6 +34,8 @@ function validate(step: number, d: DraftPost): string | null {
 }
 
 export default function CreatePostScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const toast = useToast();
   const scrollRef = useRef<ScrollView>(null);
   const [step, setStep] = useState(0);
@@ -159,7 +161,7 @@ export default function CreatePostScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   flex2: { flex: 2 },
   header: {
@@ -188,4 +190,4 @@ const styles = StyleSheet.create({
     borderTopColor: colors.borderSubtle,
     backgroundColor: colors.surface,
   },
-});
+}));

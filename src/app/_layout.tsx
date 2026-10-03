@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
-import { DefaultTheme, ThemeProvider } from "expo-router/react-navigation";
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from "expo-router/react-navigation";
 import { StatusBar } from "expo-status-bar";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
@@ -9,23 +9,11 @@ import { ToastProvider } from "@/components";
 import { AuthProvider } from "@/context/AuthContext";
 import { LibraryProvider } from "@/context/LibraryContext";
 import SplashScreen from "@/screens/Splash/SplashScreen";
-import { colors } from "@/theme";
+import { ThemeProvider, useTheme } from "@/theme";
 
 export const unstable_settings = {
   // Ensures deep links into pushed screens still have the tabs underneath.
   anchor: "(tabs)",
-};
-
-const navigationTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: colors.primary,
-    background: colors.background,
-    card: colors.surface,
-    text: colors.text,
-    border: colors.border,
-  },
 };
 
 /**
@@ -37,28 +25,53 @@ const navigationTheme = {
  *                 onboarding / login when signed out
  *  search, place/[id], creator/[id], settings, edit-profile → pushed screens
  */
-export default function RootLayout() {
+function RootNavigator() {
+  const { colors, isDark } = useTheme();
   const [showSplash, setShowSplash] = useState(true);
   const hideSplash = useCallback(() => setShowSplash(false), []);
 
+  // Navigation chrome (screen backgrounds, transitions) follows the active scheme.
+  const navigationTheme = useMemo(() => {
+    const base = isDark ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        primary: colors.primary,
+        background: colors.background,
+        card: colors.surface,
+        text: colors.text,
+        border: colors.border,
+      },
+    };
+  }, [colors, isDark]);
+
+  return (
+    <NavigationThemeProvider value={navigationTheme}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+        <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
+        <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
+        <Stack.Screen name="(auth)" options={{ animation: "fade" }} />
+        <Stack.Screen name="search" options={{ animation: "fade_from_bottom" }} />
+        <Stack.Screen name="place/[id]" />
+        <Stack.Screen name="creator/[id]" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="edit-profile" options={{ presentation: "modal" }} />
+      </Stack>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      {showSplash && <SplashScreen onFinish={hideSplash} />}
+    </NavigationThemeProvider>
+  );
+}
+
+export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={navigationTheme}>
+      <ThemeProvider>
         <AuthProvider>
           <LibraryProvider>
             <ToastProvider>
-              <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
-                <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
-                <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
-                <Stack.Screen name="(auth)" options={{ animation: "fade" }} />
-                <Stack.Screen name="search" options={{ animation: "fade_from_bottom" }} />
-                <Stack.Screen name="place/[id]" />
-                <Stack.Screen name="creator/[id]" />
-                <Stack.Screen name="settings" />
-                <Stack.Screen name="edit-profile" options={{ presentation: "modal" }} />
-              </Stack>
-              <StatusBar style="dark" />
-              {showSplash && <SplashScreen onFinish={hideSplash} />}
+              <RootNavigator />
             </ToastProvider>
           </LibraryProvider>
         </AuthProvider>

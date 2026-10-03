@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
-import { colors } from "@/theme";
+import { makeStyles, useTheme } from "@/theme";
 
 import { AppText } from "./AppText";
 
@@ -14,6 +14,8 @@ type Props = {
 
 /** LocaSphere mark: a location pin inside an orbit ring. */
 export function Logo({ size = 56, tone = "brand", withWordmark }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const isLight = tone === "light";
   const bg = isLight ? colors.white : colors.primary;
   const fg = isLight ? colors.primary : colors.white;
@@ -70,6 +72,6 @@ export function Logo({ size = 56, tone = "brand", withWordmark }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: { flexDirection: "row", alignItems: "center", gap: 12 },
-});
+}));

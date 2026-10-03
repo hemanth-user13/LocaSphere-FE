@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
 
-import { colors, radius, shadows } from "@/theme";
+import { makeStyles, radius, shadows, useTheme, type Colors } from "@/theme";
 import type { IconName } from "@/types/models";
 
 type Variant = "surface" | "glass" | "soft" | "plain" | "primary";
@@ -17,13 +17,13 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-const BG: Record<Variant, string> = {
+const background = (colors: Colors): Record<Variant, string> => ({
   surface: colors.surface,
   glass: colors.glass,
   soft: colors.primarySoft,
   plain: "transparent",
   primary: colors.primary,
-};
+});
 
 /** Circular icon button with a guaranteed 44pt+ touch target. */
 export function IconButton({
@@ -36,6 +36,8 @@ export function IconButton({
   badge,
   style,
 }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const fg =
     iconColor ?? (variant === "primary" ? colors.white : variant === "soft" ? colors.primary : colors.text);
   return (
@@ -49,7 +51,7 @@ export function IconButton({
         {
           width: size,
           height: size,
-          backgroundColor: BG[variant],
+          backgroundColor: background(colors)[variant],
           opacity: pressed ? 0.75 : 1,
         },
         variant === "surface" && styles.bordered,
@@ -63,7 +65,7 @@ export function IconButton({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   base: {
     borderRadius: radius.pill,
     alignItems: "center",
@@ -84,4 +86,4 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.surface,
   },
-});
+}));

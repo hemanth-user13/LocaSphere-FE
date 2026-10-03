@@ -1,14 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 import { AppText } from "@/components";
-import { colors, radius, shadows, spacing } from "@/theme";
+import { makeStyles, radius, shadows, spacing, useTheme } from "@/theme";
 import type { IconName } from "@/types/models";
 
 const photo = (id: string) => `https://images.unsplash.com/photo-${id}?w=600&q=80&auto=format&fit=crop`;
 
-function FloatingChip({ icon, label, tint = colors.primary, style }: { icon: IconName; label: string; tint?: string; style?: object }) {
+function FloatingChip({ icon, label, tint: tintProp, style }: { icon: IconName; label: string; tint?: string; style?: object }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
+  const tint = tintProp ?? colors.primary;
   return (
     <View style={[styles.chip, shadows.md, style]}>
       <View style={[styles.chipIcon, { backgroundColor: `${tint}18` }]}>
@@ -20,6 +23,8 @@ function FloatingChip({ icon, label, tint = colors.primary, style }: { icon: Ico
 }
 
 function Pin({ top, left, icon, active }: { top: string; left: string; icon: IconName; active?: boolean }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View style={[styles.pin, { top: top as `${number}%`, left: left as `${number}%` }, active && styles.pinActive]}>
       <Ionicons name={icon} size={active ? 18 : 14} color={active ? colors.white : colors.primary} />
@@ -28,6 +33,8 @@ function Pin({ top, left, icon, active }: { top: string; left: string; icon: Ico
 }
 
 export function DiscoverIllustration() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.stage}>
       <View style={[styles.map, shadows.md]}>
@@ -48,6 +55,8 @@ export function DiscoverIllustration() {
 }
 
 export function CommunityIllustration() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.stage}>
       <Image source={{ uri: photo("1507525428034-b723cf961d3e") }} style={[styles.photo, styles.photoBack]} contentFit="cover" />
@@ -62,6 +71,8 @@ export function CommunityIllustration() {
 }
 
 export function ShareIllustration() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.stage}>
       <View style={[styles.composer, shadows.md]}>
@@ -95,32 +106,32 @@ export function ShareIllustration() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   stage: { width: 300, height: 300, alignItems: "center", justifyContent: "center" },
   map: {
     width: 240,
     height: 240,
     borderRadius: radius.xxl,
-    backgroundColor: "#EEF1F6",
+    backgroundColor: colors.mapBackground,
     overflow: "hidden",
     borderWidth: 6,
-    borderColor: colors.white,
+    borderColor: colors.surface,
   },
-  road: { position: "absolute", backgroundColor: colors.white },
-  parkBlob: { position: "absolute", width: 80, height: 60, borderRadius: 24, backgroundColor: "#DDEFE3" },
-  waterBlob: { position: "absolute", width: 70, height: 44, borderRadius: 22, backgroundColor: "#D6E4F5" },
+  road: { position: "absolute", backgroundColor: colors.mapRoad },
+  parkBlob: { position: "absolute", width: 80, height: 60, borderRadius: 24, backgroundColor: colors.mapPark },
+  waterBlob: { position: "absolute", width: 70, height: 44, borderRadius: 22, backgroundColor: colors.mapWater },
   pin: {
     position: "absolute",
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 2,
     borderColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },
-  pinActive: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.primary, borderColor: colors.white },
+  pinActive: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.primary, borderColor: colors.surface },
   chip: {
     flexDirection: "row",
     alignItems: "center",
@@ -133,7 +144,7 @@ const styles = StyleSheet.create({
   },
   chipIcon: { width: 26, height: 26, borderRadius: 13, alignItems: "center", justifyContent: "center" },
   avatar: { width: 26, height: 26, borderRadius: 13 },
-  photo: { position: "absolute", width: 170, height: 220, borderRadius: radius.xl, borderWidth: 5, borderColor: colors.white },
+  photo: { position: "absolute", width: 170, height: 220, borderRadius: radius.xl, borderWidth: 5, borderColor: colors.surface },
   photoBack: { transform: [{ rotate: "-8deg" }, { translateX: -50 }] },
   photoFront: { transform: [{ rotate: "6deg" }, { translateX: 46 }] },
   composer: {
@@ -158,7 +169,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -174,4 +185,4 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
   },
   publish: { paddingHorizontal: spacing.md, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: colors.primary },
-});
+}));

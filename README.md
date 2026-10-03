@@ -61,6 +61,7 @@ This repository contains the **mobile frontend**: a working React Native (Expo) 
 - **Creator tools:** a 4-step publishing flow (Photos → Details → Category & location → Preview) with drafts and quality hints.
 - **Saved collection:** filters for All / Places / Posts / Events, with instant optimistic removal.
 - **Profiles:** personal profile with creator insights and Posts / Reviews / Saved tabs, plus public creator profiles with grid/list layouts.
+- **Light & dark mode:** follows the system setting by default, with a manual System / Light / Dark switch in Settings. Every screen, map, chip and illustration has a dark variant.
 - **Production UX:** skeleton loaders, empty states, error states with retry, pull-to-refresh, toasts, haptics, accessibility labels and 44 pt+ touch targets.
 
 ---
@@ -93,7 +94,7 @@ This repository contains the **mobile frontend**: a working React Native (Expo) 
 | Framework | [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/), React Native 0.86, React 19.2 |
 | Language | TypeScript (strict) |
 | Navigation | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based, built on React Navigation) |
-| Styling | `StyleSheet` + a centralised design-token theme (`src/theme`) |
+| Styling | `StyleSheet` via a theme-aware `makeStyles()` helper + design tokens (`src/theme`), light & dark schemes |
 | Animation | React Native Reanimated 4 |
 | Images | `expo-image` (caching, transitions), `expo-image-picker` |
 | Device APIs | `expo-haptics`, `Share`, `Linking` (directions) |
@@ -226,18 +227,38 @@ App identity (name, scheme, splash colour, permission strings) is set in [`app.j
 
 ## Design system
 
-All visual decisions come from tokens in [`src/theme`](src/theme), so a rebrand only touches one folder.
+All visual decisions come from tokens in [`src/theme`](src/theme), so a rebrand only touches one folder. Each token has a light and a dark value:
 
-| Token | Value | Usage |
-| --- | --- | --- |
-| Primary | `#4F46E5` | Brand, primary actions, active states |
-| Primary Dark | `#3730A3` | Pressed states |
-| Accent | `#7C3AED` | Highlights, creator badge, verified marks |
-| Background | `#F8FAFC` | App background |
-| Surface | `#FFFFFF` | Cards, sheets |
-| Text / Secondary | `#0F172A` / `#64748B` | Typography |
-| Border | `#E2E8F0` | Subtle card borders |
-| Success / Warning / Error | `#10B981` / `#F59E0B` / `#EF4444` | Status |
+| Token | Light | Dark | Usage |
+| --- | --- | --- | --- |
+| Primary | `#4F46E5` | `#6366F1` | Brand, primary actions, active states |
+| Accent | `#7C3AED` | `#A78BFA` | Highlights, creator badge, verified marks |
+| Background | `#F8FAFC` | `#0B1120` | App background |
+| Surface | `#FFFFFF` | `#131B2E` | Cards, sheets, tab bar |
+| Surface muted | `#F1F5F9` | `#1B2538` | Inputs, segmented controls |
+| Text / Secondary | `#0F172A` / `#64748B` | `#F1F5F9` / `#94A3B8` | Typography |
+| Border | `#E2E8F0` | `#253049` | Subtle card borders |
+| Success / Warning / Error | `#10B981` / `#F59E0B` / `#EF4444` | `#34D399` / `#FBBF24` / `#F87171` | Status |
+
+The dark scheme uses layered navy surfaces rather than pure black, softened text, and slightly brighter brand colours so contrast stays readable.
+
+**Using the theme in components**
+
+```tsx
+import { makeStyles, useTheme } from "@/theme";
+
+function Card() {
+  const { colors, isDark } = useTheme(); // for inline colours / icons
+  const styles = useStyles();            // cached per colour scheme
+  return <View style={styles.card} />;
+}
+
+const useStyles = makeStyles((colors) => ({
+  card: { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 },
+}));
+```
+
+Never hard-code hex values in components; add a token to both `lightColors` and `darkColors` in `src/theme/colors.ts` instead.
 
 - **Spacing:** 8 pt system (`xs 4 · sm 8 · md 12 · lg 16 · xl 24 · xxl 32 · xxxl 48`), with 16 px screen padding.
 - **Radius:** 8–28 px; cards use 16 px.
@@ -335,14 +356,13 @@ See the [EAS documentation](https://docs.expo.dev/eas/) for profiles and credent
 ## Roadmap
 
 - [ ] Connect the Django REST API (auth, feed, content, search)
-- [ ] Persist the session with `expo-secure-store` and preferences with AsyncStorage
+- [ ] Persist the session with `expo-secure-store` and preferences (incl. theme choice) with AsyncStorage
 - [ ] Real maps (`react-native-maps` / Mapbox) behind `DiscoveryMap`
 - [ ] Device location via `expo-location`
 - [ ] Review composer and post editing
 - [ ] Photo uploads via presigned URLs
 - [ ] Push notifications for nearby events
 - [ ] Semantic search, recommendations and AI review summaries
-- [ ] Dark mode
 - [ ] Unit and E2E tests
 
 ---

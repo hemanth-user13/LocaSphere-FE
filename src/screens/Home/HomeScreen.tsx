@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, ScrollView, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import {
@@ -21,11 +21,10 @@ import { useAuth } from "@/context/AuthContext";
 import { CATEGORIES } from "@/data/categories";
 import { useResource } from "@/hooks/useResource";
 import { config, contentService, usersService } from "@/services";
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { CategoryId, ContentItem, User } from "@/types/models";
 import { greetingForHour } from "@/utils/format";
 
-const MORE_TILE = { label: "More", icon: "grid-outline" as const, tint: { bg: colors.surfaceMuted, fg: colors.textSecondary } };
 
 async function loadHome() {
   const feed = await contentService.getHomeFeed();
@@ -38,6 +37,7 @@ const openExplore = (category?: CategoryId) =>
   router.navigate({ pathname: "/explore", params: category ? { category } : {} });
 
 function HorizontalCards({ items }: { items: ContentItem[] }) {
+  const styles = useStyles();
   return (
     <FlatList
       data={items}
@@ -53,7 +53,11 @@ function HorizontalCards({ items }: { items: ContentItem[] }) {
 }
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { session } = useAuth();
+  const moreTint = { bg: colors.surfaceMuted, fg: colors.textSecondary };
+  const moreTile = { label: "More", icon: "grid-outline" as const, tint: moreTint, darkTint: moreTint };
   const { data, error, isLoading, isRefreshing, refresh, reload } = useResource(loadHome);
   const user = session?.user;
 
@@ -62,7 +66,7 @@ export default function HomeScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} />}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -91,7 +95,7 @@ export default function HomeScreen() {
           {CATEGORIES.map((c) => (
             <CategoryTile key={c.id} category={c} onPress={() => openExplore(c.id)} />
           ))}
-          <CategoryTile category={MORE_TILE} onPress={() => openExplore()} />
+          <CategoryTile category={moreTile} onPress={() => openExplore()} />
         </ScrollView>
 
         {isLoading ? (
@@ -158,7 +162,7 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   scroll: { paddingBottom: spacing.xxl },
   header: {
@@ -184,7 +188,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     backgroundColor: colors.accentSoft,
     borderWidth: 1,
-    borderColor: "#E9E3FF",
+    borderColor: colors.accentMuted,
   },
   ctaIcon: {
     width: 44,
@@ -194,4 +198,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}));

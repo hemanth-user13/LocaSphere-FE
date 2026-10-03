@@ -2,11 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { memo } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { useLibrary } from "@/context/LibraryContext";
 import { getCategory } from "@/data/categories";
-import { colors, radius, spacing } from "@/theme";
+import { makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { ContentItem, User } from "@/types/models";
 import { formatCount, formatRelativeTime } from "@/utils/format";
 import { shareContent } from "@/utils/share";
@@ -23,6 +23,8 @@ type Props = {
 
 /** Community post: creator header, photo, caption and engagement row. */
 function PostCardBase({ item, author }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { isLiked, toggleLike } = useLibrary();
   const liked = isLiked(item.id);
   const likeCount = item.likeCount + (liked ? 1 : 0);
@@ -110,7 +112,7 @@ function PostCardBase({ item, author }: Props) {
 
 export const PostCard = memo(PostCardBase);
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
@@ -132,4 +134,4 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   action: { flexDirection: "row", alignItems: "center", gap: spacing.xs + 2, minHeight: 36 },
-});
+}));

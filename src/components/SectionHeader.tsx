@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { layout, spacing } from "@/theme";
+import { layout, makeStyles, spacing } from "@/theme";
 
 import { AppText } from "./AppText";
 
@@ -13,6 +13,7 @@ type Props = {
 };
 
 export function SectionHeader({ title, subtitle, actionLabel = "See all", onAction, inset = true }: Props) {
+  const styles = useStyles();
   return (
     <View style={[styles.row, inset && { paddingHorizontal: layout.screenPadding }]}>
       <View style={styles.text}>
@@ -36,7 +37,7 @@ export function SectionHeader({ title, subtitle, actionLabel = "See all", onActi
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     flexDirection: "row",
     alignItems: "flex-end",
@@ -44,4 +45,4 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   text: { flex: 1, gap: 2 },
-});
+}));

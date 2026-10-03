@@ -25,8 +25,9 @@ export type Category = {
   id: CategoryId;
   label: string;
   icon: IconName;
-  /** Soft background + foreground tint used for category tiles. */
+  /** Soft background + foreground tint used for category tiles (light / dark scheme). */
   tint: { bg: string; fg: string };
+  darkTint: { bg: string; fg: string };
 };
 
 /** A place is a fixed location, an event is time-bound, a post is a community story. */

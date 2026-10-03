@@ -1,20 +1,23 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText, Button, Logo, useToast } from "@/components";
 import { useAuth } from "@/context/AuthContext";
 import { authService } from "@/services";
-import { colors, layout, radius, spacing, typography } from "@/theme";
+import { layout, makeStyles, radius, spacing, typography, useTheme } from "@/theme";
 import { formatPhone } from "@/utils/format";
 import { haptics } from "@/utils/haptics";
+import { AppTextInput } from "@/components/AppTextInput";
 
 const COUNTRY_CODE = "+91";
 
 export default function LoginScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { signIn } = useAuth();
   const toast = useToast();
   const [digits, setDigits] = useState("");
@@ -83,7 +86,7 @@ export default function LoginScreen() {
                 <Ionicons name="chevron-down" size={14} color={colors.textMuted} />
               </View>
               <View style={styles.divider} />
-              <TextInput
+              <AppTextInput
                 value={formatPhone(digits)}
                 onChangeText={onChange}
                 placeholder="98765 43210"
@@ -150,7 +153,7 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   root: { flex: 1, backgroundColor: colors.surface },
   flex: { flex: 1 },
   scroll: { flexGrow: 1, paddingHorizontal: layout.screenPadding + 4, paddingBottom: spacing.xl },
@@ -182,4 +185,4 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: spacing.sm,
   },
-});
+}));

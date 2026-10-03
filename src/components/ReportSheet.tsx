@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { contentService } from "@/services";
-import { colors, radius, spacing } from "@/theme";
+import { makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { ID, ReportReason } from "@/types/models";
 import { haptics } from "@/utils/haptics";
 
@@ -23,6 +23,8 @@ const REASONS: { value: ReportReason; label: string; hint: string }[] = [
 type Props = { contentId: ID; visible: boolean; onClose: () => void };
 
 export function ReportSheet({ contentId, visible, onClose }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const toast = useToast();
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -81,7 +83,7 @@ export function ReportSheet({ contentId, visible, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   list: { gap: spacing.sm },
   option: {
     flexDirection: "row",
@@ -94,4 +96,4 @@ const styles = StyleSheet.create({
   },
   optionSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
   flex: { flex: 1, gap: 2 },
-});
+}));

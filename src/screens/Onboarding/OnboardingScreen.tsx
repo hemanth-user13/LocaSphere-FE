@@ -3,7 +3,6 @@ import { useRef, useState, type ComponentType } from "react";
 import {
   FlatList,
   Pressable,
-  StyleSheet,
   View,
   useWindowDimensions,
   type NativeScrollEvent,
@@ -14,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText, Button, Logo } from "@/components";
 import { useAuth } from "@/context/AuthContext";
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing } from "@/theme";
 
 import { CommunityIllustration, DiscoverIllustration, ShareIllustration } from "./Illustrations";
 
@@ -45,6 +44,7 @@ const SLIDES: Slide[] = [
 ];
 
 export default function OnboardingScreen() {
+  const styles = useStyles();
   const { width, height } = useWindowDimensions();
   // Shrink the artwork on short screens so the footer controls always fit.
   const artScale = height < 700 ? 0.72 : height < 800 ? 0.86 : 1;
@@ -137,7 +137,7 @@ export default function OnboardingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   root: { flex: 1, backgroundColor: colors.surface },
   top: {
     flexDirection: "row",
@@ -164,4 +164,4 @@ const styles = StyleSheet.create({
   dots: { flexDirection: "row", justifyContent: "center", gap: spacing.sm },
   dot: { width: 8, height: 8, borderRadius: radius.pill, backgroundColor: colors.border },
   dotActive: { width: 24, backgroundColor: colors.primary },
-});
+}));

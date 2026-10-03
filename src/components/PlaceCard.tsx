@@ -2,10 +2,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { memo } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { getCategory } from "@/data/categories";
-import { colors, radius, spacing } from "@/theme";
+import { makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { ContentItem } from "@/types/models";
 import { containerButtonRole } from "@/utils/a11y";
 import { formatDistance, formatEventDate } from "@/utils/format";
@@ -38,6 +38,8 @@ function KindBadge({ item }: { item: ContentItem }) {
 }
 
 function Meta({ item }: { item: ContentItem }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const category = getCategory(item.categoryId);
   return (
     <View style={styles.metaRow}>
@@ -50,6 +52,8 @@ function Meta({ item }: { item: ContentItem }) {
 }
 
 function Stats({ item, compact }: { item: ContentItem; compact?: boolean }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.metaRow}>
       <Rating value={item.rating} count={compact ? undefined : item.reviewCount} />
@@ -71,6 +75,8 @@ function Stats({ item, compact }: { item: ContentItem; compact?: boolean }) {
 }
 
 function PlaceCardBase({ item, variant = "feature", onPress, rank, showSave = true }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const handlePress = () => (onPress ? onPress(item) : openContent(item.id));
   const a11yLabel = `${item.title}, ${getCategory(item.categoryId).label} in ${item.area}, ${formatDistance(item.distanceKm)} away`;
 
@@ -144,7 +150,7 @@ function PlaceCardBase({ item, variant = "feature", onPress, rank, showSave = tr
 
 export const PlaceCard = memo(PlaceCardBase);
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
@@ -179,4 +185,4 @@ const styles = StyleSheet.create({
     borderRadius: radius.xs,
     backgroundColor: colors.overlay,
   },
-});
+}));

@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
+import { Pressable, View, useWindowDimensions } from "react-native";
 
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { ContentItem } from "@/types/models";
 import { formatCount } from "@/utils/format";
 
@@ -11,6 +11,8 @@ import { openContent } from "./PlaceCard";
 
 /** Two-column photo grid for profile posts. */
 export function ContentGrid({ items }: { items: ContentItem[] }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { width } = useWindowDimensions();
   const tile = (Math.min(width, layout.maxContentWidth) - layout.screenPadding * 2 - spacing.md) / 2;
 
@@ -48,7 +50,7 @@ export function ContentGrid({ items }: { items: ContentItem[] }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -69,4 +71,4 @@ const styles = StyleSheet.create({
     backgroundColor: colors.scrim,
   },
   title: { marginTop: spacing.sm },
-});
+}));

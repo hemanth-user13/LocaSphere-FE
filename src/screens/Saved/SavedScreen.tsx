@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { RefreshControl, ScrollView, View } from "react-native";
 import Animated, { FadeOut, LinearTransition } from "react-native-reanimated";
 
 import {
@@ -15,7 +15,7 @@ import {
 import { useLibrary } from "@/context/LibraryContext";
 import { useResource } from "@/hooks/useResource";
 import { libraryService } from "@/services";
-import { colors, layout, spacing } from "@/theme";
+import { layout, makeStyles, spacing, useTheme } from "@/theme";
 import type { ContentKind, IconName } from "@/types/models";
 
 type Filter = "all" | ContentKind;
@@ -28,6 +28,8 @@ const FILTERS: { value: Filter; label: string; icon: IconName; empty: string }[]
 ];
 
 export default function SavedScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { savedIds } = useLibrary();
   const [filter, setFilter] = useState<Filter>("all");
   const { data, error, isLoading, isRefreshing, refresh, reload } = useResource(() => libraryService.getSaved());
@@ -88,7 +90,7 @@ export default function SavedScreen() {
           contentContainerStyle={[styles.list, visible.length === 0 && styles.flexGrow]}
           showsVerticalScrollIndicator={false}
           itemLayoutAnimation={LinearTransition.duration(220)}
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />}
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} />}
           renderItem={({ item }) => (
             <Animated.View exiting={FadeOut.duration(180)}>
               <PlaceCard item={item} variant="row" />
@@ -109,10 +111,10 @@ export default function SavedScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   header: { paddingHorizontal: layout.screenPadding, paddingTop: spacing.md, gap: 2 },
   chipsScroll: { flexGrow: 0 },
   chips: { paddingHorizontal: layout.screenPadding, paddingVertical: spacing.lg, gap: spacing.sm },
   list: { paddingHorizontal: layout.screenPadding, paddingBottom: spacing.xxl, gap: spacing.md },
   flexGrow: { flexGrow: 1, justifyContent: "center" },
-});
+}));

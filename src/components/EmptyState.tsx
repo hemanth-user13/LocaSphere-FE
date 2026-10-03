@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
-import { colors, radius, spacing } from "@/theme";
+import { makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { IconName } from "@/types/models";
 
 import { AppText } from "./AppText";
@@ -26,11 +26,13 @@ export function EmptyState({
   tone = "primary",
   compact,
 }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const isError = tone === "error";
   return (
     <View style={[styles.container, compact && { paddingVertical: spacing.xl }]}>
       <View style={[styles.iconWrap, { backgroundColor: isError ? colors.errorSoft : colors.primarySoft }]}>
-        <View style={[styles.iconInner, { backgroundColor: isError ? "#FEE2E2" : colors.primaryMuted }]}>
+        <View style={[styles.iconInner, { backgroundColor: isError ? colors.errorMuted : colors.primaryMuted }]}>
           <Ionicons name={icon} size={28} color={isError ? colors.error : colors.primary} />
         </View>
       </View>
@@ -71,7 +73,7 @@ export function ErrorState({ message, onRetry }: { message?: string; onRetry?: (
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     alignItems: "center",
     paddingVertical: spacing.xxxl,
@@ -94,4 +96,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   message: { maxWidth: 300 },
-});
+}));

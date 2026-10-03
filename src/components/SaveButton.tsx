@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 
 import { useLibrary } from "@/context/LibraryContext";
-import { colors, radius, shadows } from "@/theme";
+import { makeStyles, radius, shadows, useTheme } from "@/theme";
 import type { ID } from "@/types/models";
 
 type Props = {
@@ -14,6 +14,8 @@ type Props = {
 };
 
 export function SaveButton({ id, variant = "overlay", size = 36 }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { isSaved, toggleSave } = useLibrary();
   const saved = isSaved(id);
   const scale = useSharedValue(1);
@@ -46,8 +48,8 @@ export function SaveButton({ id, variant = "overlay", size = 36 }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   base: { borderRadius: radius.pill, alignItems: "center", justifyContent: "center" },
   overlay: { backgroundColor: colors.glass },
   inline: { backgroundColor: colors.surfaceMuted },
-});
+}));

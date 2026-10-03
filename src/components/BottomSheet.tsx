@@ -3,7 +3,7 @@ import { Modal, Pressable, StyleSheet, View } from "react-native";
 import Animated, { SlideInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 
 import { AppText } from "./AppText";
 import { IconButton } from "./IconButton";
@@ -22,6 +22,8 @@ type Props = {
  * @gorhom/bottom-sheet or a formSheet route if gestures are needed later.
  */
 export function BottomSheet({ visible, onClose, title, subtitle, children, footer }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
@@ -51,7 +53,7 @@ export function BottomSheet({ visible, onClose, title, subtitle, children, foote
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   root: { flex: 1, justifyContent: "flex-end", backgroundColor: colors.overlay },
   sheet: {
     backgroundColor: colors.surface,
@@ -78,4 +80,4 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { paddingHorizontal: layout.screenPadding + 4, paddingTop: spacing.sm },
   footer: { paddingHorizontal: layout.screenPadding + 4, paddingTop: spacing.lg, flexDirection: "row", gap: spacing.md },
-});
+}));

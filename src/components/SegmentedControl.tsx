@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { colors, radius, shadows, spacing } from "@/theme";
+import { makeStyles, radius, shadows, spacing, useTheme } from "@/theme";
 import type { IconName } from "@/types/models";
 
 import { AppText } from "./AppText";
@@ -17,6 +17,8 @@ type Props<T extends string> = {
 };
 
 export function SegmentedControl<T extends string>({ options, value, onChange, variant = "pill" }: Props<T>) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   if (variant === "tabs") {
     return (
       <View style={styles.tabs} accessibilityRole="tablist">
@@ -66,7 +68,7 @@ export function SegmentedControl<T extends string>({ options, value, onChange, v
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   pill: {
     flexDirection: "row",
     padding: 3,
@@ -90,4 +92,4 @@ const styles = StyleSheet.create({
   },
   tab: { flex: 1, alignItems: "center", paddingTop: spacing.md, gap: spacing.md, minHeight: 48 },
   indicator: { height: 2.5, alignSelf: "stretch", marginHorizontal: spacing.xl, borderRadius: 2 },
-});
+}));

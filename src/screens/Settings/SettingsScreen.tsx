@@ -2,12 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, Switch, View } from "react-native";
+import { Alert, Pressable, ScrollView, Switch, View } from "react-native";
 
 import { AppText, Avatar, Screen, ScreenHeader, useToast } from "@/components";
 import { useAuth } from "@/context/AuthContext";
 import { config } from "@/services";
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme, type ThemePreference } from "@/theme";
 import type { IconName } from "@/types/models";
 
 type RowProps = {
@@ -20,6 +20,8 @@ type RowProps = {
 };
 
 function Row({ icon, label, value, onPress, right, destructive }: RowProps) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -44,6 +46,7 @@ function Row({ icon, label, value, onPress, right, destructive }: RowProps) {
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
       <AppText variant="overline" color="textSecondary" style={styles.sectionTitle}>
@@ -54,7 +57,51 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+const APPEARANCE: { value: ThemePreference; label: string; icon: IconName }[] = [
+  { value: "system", label: "System", icon: "phone-portrait-outline" },
+  { value: "light", label: "Light", icon: "sunny-outline" },
+  { value: "dark", label: "Dark", icon: "moon-outline" },
+];
+
+/** Three-way theme picker with a mini preview of each scheme. */
+function AppearancePicker() {
+  const { colors, preference, setPreference } = useTheme();
+  const styles = useStyles();
+  return (
+    <View style={styles.appearance} accessibilityRole="radiogroup">
+      {APPEARANCE.map((o) => {
+        const selected = preference === o.value;
+        return (
+          <Pressable
+            key={o.value}
+            onPress={() => setPreference(o.value)}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: selected }}
+            accessibilityLabel={`${o.label} appearance`}
+            style={[styles.appearanceOption, selected && styles.appearanceSelected]}
+          >
+            <View style={[styles.preview, o.value === "dark" && styles.previewDark]}>
+              {o.value === "system" && <View style={styles.previewHalf} />}
+              <View style={[styles.previewBar, o.value === "dark" && { backgroundColor: "#253049" }]} />
+              <View style={[styles.previewBar, { width: "55%" }, o.value === "dark" && { backgroundColor: "#253049" }]} />
+              <View style={styles.previewDot} />
+            </View>
+            <View style={styles.appearanceLabel}>
+              <Ionicons name={o.icon} size={14} color={selected ? colors.primary : colors.textSecondary} />
+              <AppText variant="captionStrong" color={selected ? "primary" : "text"}>
+                {o.label}
+              </AppText>
+            </View>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 export default function SettingsScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { session, signOut } = useAuth();
   const toast = useToast();
   const [notifications, setNotifications] = useState(true);
@@ -98,6 +145,10 @@ export default function SettingsScreen() {
           <Row icon="lock-closed-outline" label="Privacy" onPress={soon("Privacy settings")} />
         </Section>
 
+        <Section title="Appearance">
+          <AppearancePicker />
+        </Section>
+
         <Section title="Preferences">
           <Row icon="location-outline" label="Home city" value={config.defaultCity} onPress={soon("City selection")} />
           <Row
@@ -132,7 +183,41 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
+  appearance: { flexDirection: "row", gap: spacing.sm, padding: spacing.md },
+  appearanceOption: {
+    flex: 1,
+    gap: spacing.sm,
+    padding: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  appearanceSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
+  // Previews intentionally use fixed light/dark swatches so each option shows its own look.
+  preview: {
+    height: 56,
+    borderRadius: radius.sm,
+    padding: spacing.sm,
+    gap: 5,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    overflow: "hidden",
+  },
+  previewDark: { backgroundColor: "#0B1120", borderColor: "#253049" },
+  previewHalf: { position: "absolute", top: 0, right: 0, bottom: 0, width: "50%", backgroundColor: "#0B1120" },
+  previewBar: { height: 6, width: "80%", borderRadius: 3, backgroundColor: "#E2E8F0" },
+  previewDot: {
+    position: "absolute",
+    right: spacing.sm,
+    bottom: spacing.sm,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: colors.primary,
+  },
+  appearanceLabel: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4 },
   flex: { flex: 1 },
   scroll: { padding: layout.screenPadding, paddingBottom: spacing.xxxl, gap: spacing.xl },
   account: { flexDirection: "row", alignItems: "center", gap: spacing.md, padding: spacing.lg },
@@ -160,4 +245,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}));

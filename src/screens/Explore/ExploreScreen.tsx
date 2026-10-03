@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
-import { FlatList, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { FlatList, RefreshControl, ScrollView, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
 import {
@@ -19,7 +19,7 @@ import { CATEGORIES } from "@/data/categories";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useResource } from "@/hooks/useResource";
 import { config, searchService } from "@/services";
-import { layout, spacing } from "@/theme";
+import { layout, makeStyles, spacing, useTheme } from "@/theme";
 import type { CategoryId, ID } from "@/types/models";
 
 import { countActiveFilters, FilterSheet, type ExploreFilters } from "./FilterSheet";
@@ -27,6 +27,8 @@ import { countActiveFilters, FilterSheet, type ExploreFilters } from "./FilterSh
 type ViewMode = "list" | "map";
 
 export default function ExploreScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const params = useLocalSearchParams<{ category?: CategoryId }>();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryId | null>(params.category ?? null);
@@ -101,7 +103,7 @@ export default function ExploreScreen() {
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         keyboardDismissMode="on-drag"
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} />}
         renderItem={({ item, index }) => (
           <Animated.View entering={FadeInDown.delay(Math.min(index, 5) * 50).duration(300)}>
             <PlaceCard item={item} variant="full" />
@@ -163,7 +165,7 @@ export default function ExploreScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   header: {
     flexDirection: "row",
@@ -178,4 +180,4 @@ const styles = StyleSheet.create({
   list: { paddingHorizontal: layout.screenPadding, paddingBottom: spacing.xxl, gap: spacing.lg },
   mapWrap: { flex: 1 },
   mapCard: { position: "absolute", left: layout.screenPadding, right: layout.screenPadding, bottom: spacing.lg },
-});
+}));

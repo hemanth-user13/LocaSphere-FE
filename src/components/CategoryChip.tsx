@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { colors, radius, spacing } from "@/theme";
+import { categoryTint } from "@/data/categories";
+import { makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { Category, IconName } from "@/types/models";
 
 import { AppText } from "./AppText";
@@ -15,6 +16,8 @@ type ChipProps = {
 
 /** Selectable filter pill. */
 export function CategoryChip({ label, icon, selected, onPress }: ChipProps) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -35,12 +38,15 @@ export function CategoryChip({ label, icon, selected, onPress }: ChipProps) {
 }
 
 type TileProps = {
-  category: Pick<Category, "label" | "icon" | "tint">;
+  category: Pick<Category, "label" | "icon" | "tint" | "darkTint">;
   onPress?: () => void;
 };
 
 /** Icon tile used in the Home category rail. */
 export function CategoryTile({ category, onPress }: TileProps) {
+  const { isDark } = useTheme();
+  const styles = useStyles();
+  const tint = categoryTint(category, isDark);
   return (
     <Pressable
       onPress={onPress}
@@ -48,8 +54,8 @@ export function CategoryTile({ category, onPress }: TileProps) {
       accessibilityLabel={category.label}
       style={({ pressed }) => [styles.tile, pressed && { opacity: 0.7 }]}
     >
-      <View style={[styles.tileIcon, { backgroundColor: category.tint.bg }]}>
-        <Ionicons name={category.icon} size={24} color={category.tint.fg} />
+      <View style={[styles.tileIcon, { backgroundColor: tint.bg }]}>
+        <Ionicons name={category.icon} size={24} color={tint.fg} />
       </View>
       <AppText variant="label" color="text" numberOfLines={1}>
         {category.label}
@@ -58,7 +64,7 @@ export function CategoryTile({ category, onPress }: TileProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   chip: {
     flexDirection: "row",
     alignItems: "center",
@@ -78,4 +84,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}));

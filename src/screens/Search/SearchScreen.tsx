@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { FlatList, Pressable, ScrollView, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 import {
@@ -17,17 +17,19 @@ import {
   Tag,
 } from "@/components";
 import { useLibrary } from "@/context/LibraryContext";
-import { CATEGORIES } from "@/data/categories";
+import { categoryTint, CATEGORIES } from "@/data/categories";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useResource } from "@/hooks/useResource";
 import { searchService } from "@/services";
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 import { containerButtonRole } from "@/utils/a11y";
 import type { SearchResponse } from "@/types/search";
 
 const EMPTY: SearchResponse = { hits: [], total: 0, mode: "keyword" };
 
 function SuggestionsPanel({ onPick }: { onPick: (q: string) => void }) {
+  const { colors, isDark } = useTheme();
+  const styles = useStyles();
   const { recentSearches, removeRecentSearch, clearRecentSearches } = useLibrary();
   const popular = useResource(() => searchService.getPopularQueries());
 
@@ -91,19 +93,22 @@ function SuggestionsPanel({ onPick }: { onPick: (q: string) => void }) {
       <View style={styles.block}>
         <AppText variant="h3">Browse categories</AppText>
         <View style={styles.grid}>
-          {CATEGORIES.map((c) => (
+          {CATEGORIES.map((c) => {
+            const tint = categoryTint(c, isDark);
+            return (
             <Pressable
               key={c.id}
               onPress={() => router.navigate({ pathname: "/explore", params: { category: c.id } })}
-              style={({ pressed }) => [styles.categoryCard, { backgroundColor: c.tint.bg }, pressed && { opacity: 0.8 }]}
+              style={({ pressed }) => [styles.categoryCard, { backgroundColor: tint.bg }, pressed && { opacity: 0.8 }]}
               accessibilityRole="button"
             >
-              <Ionicons name={c.icon} size={22} color={c.tint.fg} />
-              <AppText variant="calloutStrong" style={{ color: c.tint.fg }}>
+              <Ionicons name={c.icon} size={22} color={tint.fg} />
+              <AppText variant="calloutStrong" style={{ color: tint.fg }}>
                 {c.label}
               </AppText>
             </Pressable>
-          ))}
+            );
+          })}
         </View>
       </View>
     </ScrollView>
@@ -111,6 +116,7 @@ function SuggestionsPanel({ onPick }: { onPick: (q: string) => void }) {
 }
 
 export default function SearchScreen() {
+  const styles = useStyles();
   const { addRecentSearch } = useLibrary();
   const [query, setQuery] = useState("");
   const debounced = useDebouncedValue(query.trim(), 300);
@@ -190,7 +196,7 @@ export default function SearchScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   header: {
     flexDirection: "row",
@@ -227,4 +233,4 @@ const styles = StyleSheet.create({
   results: { paddingHorizontal: layout.screenPadding, paddingBottom: spacing.xxl, gap: spacing.md },
   resultsHeader: { paddingTop: spacing.sm, paddingBottom: spacing.xs, gap: 2 },
   reason: { marginTop: spacing.xs, marginLeft: spacing.sm },
-});
+}));

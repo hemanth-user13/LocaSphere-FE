@@ -8,7 +8,6 @@ import {
   FlatList,
   Pressable,
   ScrollView,
-  StyleSheet,
   View,
   useWindowDimensions,
   type NativeScrollEvent,
@@ -38,7 +37,7 @@ import { useLibrary } from "@/context/LibraryContext";
 import { getCategory } from "@/data/categories";
 import { useResource } from "@/hooks/useResource";
 import { contentService, usersService } from "@/services";
-import { colors, layout, radius, shadows, spacing } from "@/theme";
+import { layout, makeStyles, radius, shadows, spacing, useTheme } from "@/theme";
 import type { IconName, User } from "@/types/models";
 import { containerButtonRole } from "@/utils/a11y";
 import { formatCount, formatDistance, formatEventDate, formatPriceLevel } from "@/utils/format";
@@ -54,6 +53,8 @@ async function loadDetails(id: string) {
 }
 
 function InfoRow({ icon, label, value }: { icon: IconName; label: string; value: string }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.infoRow}>
       <View style={styles.infoIcon}>
@@ -70,6 +71,8 @@ function InfoRow({ icon, label, value }: { icon: IconName; label: string; value:
 }
 
 function QuickAction({ icon, label, onPress, active }: { icon: IconName; label: string; onPress: () => void; active?: boolean }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <Pressable onPress={onPress} style={styles.quick} accessibilityRole="button" accessibilityLabel={label}>
       <View style={[styles.quickIcon, active && { backgroundColor: colors.primary }]}>
@@ -99,6 +102,8 @@ function DetailsSkeleton() {
 }
 
 export default function PostDetailsScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -175,7 +180,7 @@ export default function PostDetailsScreen() {
               <Image source={{ uri }} style={{ width, height: HERO_HEIGHT, backgroundColor: colors.surfaceMuted }} contentFit="cover" transition={200} />
             )}
           />
-          <View style={styles.heroShade} pointerEvents="none" />
+          <View style={styles.heroShade} />
           {photos.length > 1 && (
             <View style={styles.counter}>
               <AppText variant="label" style={{ color: colors.white }}>
@@ -376,16 +381,17 @@ export default function PostDetailsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   root: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
   heroShade: {
+    pointerEvents: "none",
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     height: 120,
-    backgroundColor: "rgba(15,23,42,0.18)",
+    backgroundColor: colors.heroShade,
   },
   counter: {
     position: "absolute",
@@ -509,5 +515,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  likeButtonActive: { borderColor: "#FECACA", backgroundColor: colors.errorSoft },
-});
+  likeButtonActive: { borderColor: colors.errorMuted, backgroundColor: colors.errorSoft },
+}));

@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import type { ReactNode } from "react";
-import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import { View, type StyleProp, type ViewStyle } from "react-native";
 import { SafeAreaView, type Edge } from "react-native-safe-area-context";
 
-import { colors, layout, spacing } from "@/theme";
+import { layout, makeStyles, spacing, useTheme } from "@/theme";
 
 import { AppText } from "./AppText";
 import { IconButton } from "./IconButton";
@@ -16,9 +16,11 @@ type ScreenProps = {
 };
 
 /** Safe-area aware screen container with the app background. */
-export function Screen({ children, edges = ["top"], background = colors.background, style }: ScreenProps) {
+export function Screen({ children, edges = ["top"], background, style }: ScreenProps) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
-    <SafeAreaView edges={edges} style={[styles.flex, { backgroundColor: background }, style]}>
+    <SafeAreaView edges={edges} style={[styles.flex, { backgroundColor: background ?? colors.background }, style]}>
       {children}
     </SafeAreaView>
   );
@@ -34,6 +36,7 @@ type HeaderProps = {
 };
 
 export function ScreenHeader({ title, subtitle, showBack, onBack, right, large }: HeaderProps) {
+  const styles = useStyles();
   return (
     <View style={[styles.header, large && styles.headerLarge]}>
       {showBack && (
@@ -61,7 +64,7 @@ export function ScreenHeader({ title, subtitle, showBack, onBack, right, large }
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   header: {
     flexDirection: "row",
@@ -73,4 +76,4 @@ const styles = StyleSheet.create({
   },
   headerLarge: { paddingTop: spacing.md, paddingBottom: spacing.md },
   right: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-});
+}));

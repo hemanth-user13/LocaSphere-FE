@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { RefreshControl, ScrollView, Share, StyleSheet, View } from "react-native";
+import { RefreshControl, ScrollView, Share, View } from "react-native";
 
 import {
   AppText,
@@ -21,7 +21,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useLibrary } from "@/context/LibraryContext";
 import { useResource } from "@/hooks/useResource";
 import { contentService, libraryService, usersService } from "@/services";
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { IconName } from "@/types/models";
 import { formatCount } from "@/utils/format";
 
@@ -38,6 +38,7 @@ async function loadProfile(userId: string) {
 }
 
 function Insight({ icon, value, label, tint }: { icon: IconName; value: string; label: string; tint: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.insight}>
       <Ionicons name={icon} size={18} color={tint} />
@@ -63,6 +64,8 @@ function ProfileSkeleton() {
 }
 
 export default function ProfileScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { session } = useAuth();
   const { savedIds } = useLibrary();
   const [tab, setTab] = useState<Tab>("posts");
@@ -131,7 +134,7 @@ export default function ProfileScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scroll}
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />}
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} />}
         >
           <ProfileHeader
             user={data.user}
@@ -185,7 +188,7 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   scroll: { paddingBottom: spacing.xxxl },
   dashboard: {
@@ -210,4 +213,4 @@ const styles = StyleSheet.create({
   tabs: { marginTop: spacing.xl, paddingHorizontal: layout.screenPadding },
   tabBody: { paddingTop: spacing.lg },
   reviews: { paddingHorizontal: layout.screenPadding, gap: spacing.md },
-});
+}));

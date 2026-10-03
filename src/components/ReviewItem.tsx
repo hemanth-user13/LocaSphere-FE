@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { colors, radius, spacing } from "@/theme";
+import { makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { Review, User } from "@/types/models";
 import { formatRelativeTime } from "@/utils/format";
 
@@ -18,6 +18,8 @@ type Props = {
 };
 
 export function ReviewItem({ review, author, heading }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const [helpful, setHelpful] = useState(false);
   const name = heading ?? author?.name ?? "LocaSphere member";
 
@@ -60,7 +62,7 @@ export function ReviewItem({ review, author, heading }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     gap: spacing.sm + 2,
     padding: spacing.lg,
@@ -73,4 +75,4 @@ const styles = StyleSheet.create({
   flex: { flex: 1, gap: 2 },
   meta: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   helpful: { flexDirection: "row", alignItems: "center", gap: spacing.xs + 2, alignSelf: "flex-start", minHeight: 28 },
-});
+}));

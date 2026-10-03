@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { colors } from "@/theme";
+import { makeStyles, useTheme } from "@/theme";
 import { initials } from "@/utils/format";
 
 import { AppText } from "./AppText";
@@ -15,6 +15,8 @@ type Props = {
 };
 
 export function Avatar({ uri, name, size = 40, ring }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const [failed, setFailed] = useState(false);
   const showImage = uri && !failed;
 
@@ -45,11 +47,11 @@ export function Avatar({ uri, name, size = 40, ring }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   base: {
     overflow: "hidden",
     backgroundColor: colors.primaryMuted,
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}));

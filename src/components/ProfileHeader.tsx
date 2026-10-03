@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 import { getCategory } from "@/data/categories";
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { User } from "@/types/models";
 
 import { AppText } from "./AppText";
@@ -18,11 +18,13 @@ type Props = {
 
 /** Shared header for the personal profile and public creator profiles. */
 export function ProfileHeader({ user, actions }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View>
       <View style={styles.cover}>
         <View style={[styles.orb, { width: 220, height: 220, top: -90, right: -40 }]} />
-        <View style={[styles.orb, { width: 140, height: 140, top: 20, left: -50, borderColor: "rgba(124,58,237,0.14)" }]} />
+        <View style={[styles.orb, { width: 140, height: 140, top: 20, left: -50, borderColor: colors.accentTint }]} />
       </View>
 
       <View style={styles.body}>
@@ -74,7 +76,7 @@ export function ProfileHeader({ user, actions }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   cover: {
     height: 110,
     backgroundColor: colors.primarySoft,
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
     marginHorizontal: layout.screenPadding,
     borderRadius: radius.xl,
   },
-  orb: { position: "absolute", borderRadius: 999, borderWidth: 24, borderColor: "rgba(79,70,229,0.10)" },
+  orb: { position: "absolute", borderRadius: 999, borderWidth: 24, borderColor: colors.brandTint },
   body: { paddingHorizontal: layout.screenPadding, marginTop: -52, gap: 2 },
   avatarRow: { flexDirection: "row", alignItems: "flex-end", gap: spacing.md, marginLeft: spacing.lg, marginBottom: spacing.md },
   creatorBadge: {
@@ -101,4 +103,4 @@ const styles = StyleSheet.create({
   tags: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, marginTop: spacing.md },
   stats: { marginTop: spacing.lg },
   actions: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.md },
-});
+}));

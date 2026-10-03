@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, TextInput, View } from "react-native";
 import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -9,12 +9,15 @@ import { AppText, Button, ScreenHeader, useToast } from "@/components";
 import { useAuth } from "@/context/AuthContext";
 import { useCountdown } from "@/hooks/useCountdown";
 import { authService } from "@/services";
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 import { haptics } from "@/utils/haptics";
+import { AppTextInput } from "@/components/AppTextInput";
 
 const CODE_LENGTH = 6;
 
 export default function VerifyOtpScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { phone = "", resendAfter = "30" } = useLocalSearchParams<{ phone: string; resendAfter?: string }>();
   const { signIn } = useAuth();
   const toast = useToast();
@@ -110,7 +113,7 @@ export default function VerifyOtpScreen() {
               })}
             </Animated.View>
           </Pressable>
-          <TextInput
+          <AppTextInput
             ref={inputRef}
             value={code}
             onChangeText={onChange}
@@ -168,7 +171,7 @@ export default function VerifyOtpScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   root: { flex: 1, backgroundColor: colors.surface },
   flex: { flex: 1 },
   content: { flex: 1, paddingHorizontal: layout.screenPadding + 4, paddingBottom: spacing.lg, gap: spacing.lg },
@@ -201,4 +204,4 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   resendRow: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   change: { paddingVertical: spacing.sm },
-});
+}));

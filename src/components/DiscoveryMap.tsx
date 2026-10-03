@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
+import { Pressable, View, type LayoutChangeEvent } from "react-native";
 
 import { getCategory } from "@/data/categories";
-import { colors, radius, shadows, spacing } from "@/theme";
+import { makeStyles, radius, shadows, spacing, useTheme } from "@/theme";
 import type { ContentItem, ID } from "@/types/models";
 
 import { AppText } from "./AppText";
@@ -23,6 +23,8 @@ type Props = {
  * stay the same, so the Explore screen won't change.
  */
 export function DiscoveryMap({ items, selectedId, onSelect, onLocateMe }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const onLayout = (e: LayoutChangeEvent) => setSize(e.nativeEvent.layout);
 
@@ -104,15 +106,15 @@ export function DiscoveryMap({ items, selectedId, onSelect, onLocateMe }: Props)
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   canvas: {
     flex: 1,
-    backgroundColor: "#EEF1F6",
+    backgroundColor: colors.mapBackground,
     overflow: "hidden",
   },
-  water: { position: "absolute", backgroundColor: "#D6E4F5", borderRadius: 40 },
-  park: { position: "absolute", backgroundColor: "#DDEFE3", borderRadius: radius.xl },
-  road: { position: "absolute", backgroundColor: colors.white },
+  water: { position: "absolute", backgroundColor: colors.mapWater, borderRadius: 40 },
+  park: { position: "absolute", backgroundColor: colors.mapPark, borderRadius: radius.xl },
+  road: { position: "absolute", backgroundColor: colors.mapRoad },
   diagonal: {
     width: 6,
     height: "160%",
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     backgroundColor: colors.primary,
-    borderColor: colors.white,
+    borderColor: colors.surface,
   },
   pointer: {
     width: 0,
@@ -165,7 +167,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "rgba(79, 70, 229, 0.2)",
+    backgroundColor: colors.locationHalo,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -175,7 +177,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: colors.primary,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: colors.surface,
   },
   controls: { position: "absolute", right: spacing.lg, top: spacing.lg, gap: spacing.sm },
   control: {
@@ -187,4 +189,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   attribution: { position: "absolute", left: spacing.md, top: spacing.md },
-});
+}));

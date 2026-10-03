@@ -1,10 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { forwardRef, useState } from "react";
-import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
 
-import { colors, radius, spacing, typography } from "@/theme";
+import { makeStyles, radius, spacing, typography, useTheme } from "@/theme";
 
 import { AppText } from "./AppText";
+import { AppTextInput } from "./AppTextInput";
 
 type Props = {
   value?: string;
@@ -33,6 +34,8 @@ export const SearchBar = forwardRef<TextInput, Props>(function SearchBar(
   },
   ref,
 ) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const [focused, setFocused] = useState(false);
 
   const field = onPress ? (
@@ -50,7 +53,7 @@ export const SearchBar = forwardRef<TextInput, Props>(function SearchBar(
   ) : (
     <View style={[styles.field, focused && styles.fieldFocused]}>
       <Ionicons name="search" size={20} color={focused ? colors.primary : colors.textMuted} />
-      <TextInput
+      <AppTextInput
         ref={ref}
         value={value}
         onChangeText={onChangeText}
@@ -107,7 +110,7 @@ export const SearchBar = forwardRef<TextInput, Props>(function SearchBar(
   );
 });
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   flex: { flex: 1 },
   field: {
@@ -146,4 +149,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 3,
   },
-});
+}));

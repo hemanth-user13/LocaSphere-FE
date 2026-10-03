@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { ActivityIndicator, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 
-import { colors, radius, spacing, typography } from "@/theme";
+import { makeStyles, radius, spacing, typography, useTheme, type Colors } from "@/theme";
 import type { IconName } from "@/types/models";
 
 import { AppText } from "./AppText";
@@ -23,13 +23,13 @@ export type ButtonProps = {
   accessibilityLabel?: string;
 };
 
-const VARIANTS: Record<Variant, { bg: string; pressed: string; fg: string; border?: string }> = {
+const variants = (colors: Colors): Record<Variant, { bg: string; pressed: string; fg: string; border?: string }> => ({
   primary: { bg: colors.primary, pressed: colors.primaryDark, fg: colors.textOnPrimary },
   secondary: { bg: colors.primarySoft, pressed: colors.primaryMuted, fg: colors.primary },
   outline: { bg: colors.surface, pressed: colors.surfaceMuted, fg: colors.text, border: colors.border },
   ghost: { bg: "transparent", pressed: colors.surfaceMuted, fg: colors.primary },
-  danger: { bg: colors.errorSoft, pressed: "#FEE2E2", fg: colors.error },
-};
+  danger: { bg: colors.errorSoft, pressed: colors.errorMuted, fg: colors.error },
+});
 
 const SIZES: Record<Size, { height: number; px: number; icon: number; text: keyof typeof typography }> = {
   lg: { height: 54, px: spacing.xl, icon: 20, text: "bodyStrong" },
@@ -50,7 +50,9 @@ export function Button({
   style,
   accessibilityLabel,
 }: ButtonProps) {
-  const v = VARIANTS[variant];
+  const { colors } = useTheme();
+  const styles = useStyles();
+  const v = variants(colors)[variant];
   const s = SIZES[size];
   const isDisabled = disabled || loading;
 
@@ -92,7 +94,7 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   base: {
     borderRadius: radius.lg,
     alignItems: "center",
@@ -103,4 +105,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.sm,
   },
-});
+}));

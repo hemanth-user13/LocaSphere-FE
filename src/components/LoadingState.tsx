@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { StyleSheet, View, type DimensionValue, type StyleProp, type ViewStyle } from "react-native";
+import { View, type DimensionValue, type StyleProp, type ViewStyle } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { colors, layout, radius, spacing } from "@/theme";
+import { layout, makeStyles, radius, spacing, useTheme } from "@/theme";
 
 type SkeletonProps = {
   width?: DimensionValue;
@@ -19,6 +19,7 @@ type SkeletonProps = {
 
 /** Pulsing placeholder block. */
 export function Skeleton({ width = "100%", height = 14, radius: r = radius.sm, style }: SkeletonProps) {
+  const { colors } = useTheme();
   const opacity = useSharedValue(0.55);
   useEffect(() => {
     opacity.set(withRepeat(withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) }), -1, true));
@@ -33,6 +34,7 @@ export function Skeleton({ width = "100%", height = 14, radius: r = radius.sm, s
 }
 
 export function PlaceCardSkeleton({ variant = "feature" }: { variant?: "feature" | "row" | "full" }) {
+  const styles = useStyles();
   if (variant === "row") {
     return (
       <View style={[styles.card, styles.rowCard]}>
@@ -60,6 +62,7 @@ export function PlaceCardSkeleton({ variant = "feature" }: { variant?: "feature"
 
 /** Generic list skeleton used while a screen's first page loads. */
 export function LoadingState({ variant = "full", count = 3 }: { variant?: "feature" | "row" | "full"; count?: number }) {
+  const styles = useStyles();
   return (
     <View
       accessibilityLabel="Loading"
@@ -75,7 +78,7 @@ export function LoadingState({ variant = "full", count = 3 }: { variant?: "featu
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
@@ -88,4 +91,4 @@ const styles = StyleSheet.create({
   rowBody: { flex: 1, justifyContent: "center", gap: spacing.sm },
   horizontal: { flexDirection: "row", gap: spacing.md, overflow: "hidden" },
   vertical: { gap: spacing.md },
-});
+}));

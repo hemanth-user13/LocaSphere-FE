@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { RefreshControl, ScrollView, Share, StyleSheet, View } from "react-native";
+import { RefreshControl, ScrollView, Share, View } from "react-native";
 
 import {
   AppText,
@@ -20,7 +20,7 @@ import {
 import { useLibrary } from "@/context/LibraryContext";
 import { useResource } from "@/hooks/useResource";
 import { contentService, usersService } from "@/services";
-import { colors, layout, spacing } from "@/theme";
+import { layout, makeStyles, spacing, useTheme } from "@/theme";
 
 type Layout = "grid" | "list";
 
@@ -30,6 +30,8 @@ async function loadCreator(id: string) {
 }
 
 export default function CreatorProfileScreen() {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const toast = useToast();
   const { isFollowing, toggleFollow } = useLibrary();
@@ -63,7 +65,7 @@ export default function CreatorProfileScreen() {
         <ScrollView
           contentContainerStyle={styles.scroll}
           showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />}
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} />}
         >
           <ProfileHeader
             user={{
@@ -123,7 +125,7 @@ export default function CreatorProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   scroll: { paddingBottom: spacing.xxxl },
   sectionHeader: {
@@ -135,4 +137,4 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   list: { paddingHorizontal: layout.screenPadding, gap: spacing.lg },
-});
+}));

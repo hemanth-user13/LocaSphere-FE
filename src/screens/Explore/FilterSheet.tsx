@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Switch, View } from "react-native";
+import { Pressable, ScrollView, Switch, View } from "react-native";
 
 import { AppText, BottomSheet, Button } from "@/components";
-import { colors, radius, spacing } from "@/theme";
+import { makeStyles, radius, spacing, useTheme } from "@/theme";
 import type { ContentKind } from "@/types/models";
 import type { SearchFilters, SortOption } from "@/types/search";
 
@@ -33,6 +33,7 @@ export function countActiveFilters(f: ExploreFilters) {
 }
 
 function Option({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -48,6 +49,7 @@ function Option({ label, selected, onPress }: { label: string; selected: boolean
 }
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.group}>
       <AppText variant="overline" color="textSecondary">
@@ -66,6 +68,8 @@ type Props = {
 };
 
 export function FilterSheet({ visible, value, onClose, onApply }: Props) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   // Parent remounts the sheet (via `key`) each time it opens, so the draft starts from `value`.
   const [draft, setDraft] = useState<ExploreFilters>(value);
 
@@ -157,7 +161,7 @@ export function FilterSheet({ visible, value, onClose, onApply }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   flex2: { flex: 2 },
   content: { gap: spacing.xl, paddingBottom: spacing.sm },
@@ -173,4 +177,4 @@ const styles = StyleSheet.create({
   },
   optionSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
   switchRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
-});
+}));

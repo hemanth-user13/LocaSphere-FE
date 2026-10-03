@@ -2,14 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
 import { AppText, CategoryChip, PlaceCard, Tag, TextField, useToast } from "@/components";
 import { CATEGORIES } from "@/data/categories";
 import { useResource } from "@/hooks/useResource";
 import { locationService } from "@/services";
-import { colors, radius, spacing, typography } from "@/theme";
+import { makeStyles, radius, spacing, typography, useTheme } from "@/theme";
 import type { ContentItem, ContentKind, DraftPost, IconName } from "@/types/models";
+import { AppTextInput } from "@/components/AppTextInput";
 
 export const MAX_PHOTOS = 6;
 const SAMPLE_PHOTOS = [
@@ -21,6 +22,7 @@ const SUGGESTED_TAGS = ["work-friendly", "family", "budget", "date night", "outd
 type StepProps = { draft: DraftPost; update: (patch: Partial<DraftPost>) => void };
 
 function StepIntro({ title, body }: { title: string; body: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.intro}>
       <AppText variant="h1">{title}</AppText>
@@ -34,6 +36,8 @@ function StepIntro({ title, body }: { title: string; body: string }) {
 // ---------------------------------------------------------------------------
 
 export function PhotosStep({ draft, update }: StepProps) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const toast = useToast();
 
   const pick = async () => {
@@ -123,6 +127,8 @@ const KINDS: { value: ContentKind; label: string; icon: IconName; hint: string }
 ];
 
 export function DetailsStep({ draft, update }: StepProps) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.step}>
       <StepIntro title="Tell the story" body="What makes it worth discovering? Be specific — locals love details." />
@@ -176,6 +182,8 @@ export function DetailsStep({ draft, update }: StepProps) {
 // ---------------------------------------------------------------------------
 
 export function PlaceStep({ draft, update }: StepProps) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const [tagInput, setTagInput] = useState("");
   const [locating, setLocating] = useState(false);
   const areas = useResource(() => locationService.searchAreas(""));
@@ -259,7 +267,7 @@ export function PlaceStep({ draft, update }: StepProps) {
           <AppText variant="bodyStrong" color="textMuted">
             #
           </AppText>
-          <TextInput
+          <AppTextInput
             value={tagInput}
             onChangeText={setTagInput}
             onSubmitEditing={() => addTag(tagInput)}
@@ -314,6 +322,8 @@ export function PlaceStep({ draft, update }: StepProps) {
 // ---------------------------------------------------------------------------
 
 export function ReviewStep({ draft }: { draft: DraftPost }) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const preview: ContentItem = {
     id: "preview",
     kind: draft.kind,
@@ -369,7 +379,7 @@ export function ReviewStep({ draft }: { draft: DraftPost }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   flex: { flex: 1 },
   step: { gap: spacing.xl },
   intro: { gap: spacing.xs },
@@ -495,4 +505,4 @@ const styles = StyleSheet.create({
     borderColor: colors.borderSubtle,
   },
   checkRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
-});
+}));

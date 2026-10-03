@@ -1,12 +1,13 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { colors, radius, spacing } from "@/theme";
+import { makeStyles, radius, spacing } from "@/theme";
 import type { User } from "@/types/models";
 import { formatCount } from "@/utils/format";
 
 import { AppText } from "./AppText";
 
 export function ProfileStats({ stats }: { stats: User["stats"] }) {
+  const styles = useStyles();
   const items = [
     { label: "Posts", value: stats.posts },
     { label: "Followers", value: stats.followers },
@@ -30,7 +31,7 @@ export function ProfileStats({ stats }: { stats: User["stats"] }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     flexDirection: "row",
     backgroundColor: colors.surface,
@@ -41,4 +42,4 @@ const styles = StyleSheet.create({
   },
   item: { flex: 1, alignItems: "center", gap: 2 },
   divider: { borderLeftWidth: 1, borderLeftColor: colors.borderSubtle },
-});
+}));

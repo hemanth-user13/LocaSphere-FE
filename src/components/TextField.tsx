@@ -1,9 +1,10 @@
 import { forwardRef, useState } from "react";
-import { StyleSheet, TextInput, View, type TextInputProps } from "react-native";
+import { TextInput, View, type TextInputProps } from "react-native";
 
-import { colors, radius, spacing, typography } from "@/theme";
+import { makeStyles, radius, spacing, typography, useTheme } from "@/theme";
 
 import { AppText } from "./AppText";
+import { AppTextInput } from "./AppTextInput";
 
 type Props = TextInputProps & {
   label: string;
@@ -17,6 +18,8 @@ export const TextField = forwardRef<TextInput, Props>(function TextField(
   { label, hint, error, maxLength, showCount, multiline, value, onFocus, onBlur, style, ...props },
   ref,
 ) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const [focused, setFocused] = useState(false);
   return (
     <View style={styles.wrap}>
@@ -28,7 +31,7 @@ export const TextField = forwardRef<TextInput, Props>(function TextField(
           </AppText>
         )}
       </View>
-      <TextInput
+      <AppTextInput
         ref={ref}
         value={value}
         maxLength={maxLength}
@@ -61,7 +64,7 @@ export const TextField = forwardRef<TextInput, Props>(function TextField(
   );
 });
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { gap: spacing.sm },
   labelRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   input: {
@@ -78,4 +81,4 @@ const styles = StyleSheet.create({
   multiline: { minHeight: 120, textAlignVertical: "top", paddingTop: spacing.md },
   focused: { borderColor: colors.primary },
   errored: { borderColor: colors.error },
-});
+}));

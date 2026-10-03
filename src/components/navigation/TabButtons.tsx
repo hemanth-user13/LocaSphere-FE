@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { BottomTabBarButtonProps } from "expo-router/js-tabs";
 import { PlatformPressable } from "expo-router/react-navigation";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { colors, shadows } from "@/theme";
+import { makeStyles, shadows, useTheme } from "@/theme";
 import { haptics } from "@/utils/haptics";
 
 /** Standard tab with a light haptic tap on iOS. */
@@ -21,6 +21,8 @@ export function TabButton(props: BottomTabBarButtonProps) {
 
 /** Prominent centre "Create" action. */
 export function CreateTabButton({ onPress, accessibilityState, style }: BottomTabBarButtonProps) {
+  const { colors } = useTheme();
+  const styles = useStyles();
   const focused = !!accessibilityState?.selected;
   return (
     <View style={[style, styles.wrap]}>
@@ -45,7 +47,7 @@ export function CreateTabButton({ onPress, accessibilityState, style }: BottomTa
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { alignItems: "center", justifyContent: "center" },
   button: {
     marginTop: -16,
@@ -56,4 +58,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}));

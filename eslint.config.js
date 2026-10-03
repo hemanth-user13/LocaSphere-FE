@@ -5,6 +5,7 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*'],
+    // legacy/ holds the previous "Trio" prototype, kept for reference only.
+    ignores: ['dist/*', 'legacy/*'],
   },
 ]);
